@@ -36,8 +36,6 @@ nor(y1, not_f, s1) ;
 nor(not_y1, y1, y1) ;
 nor(a, not_y1, s2) ;
 
-//nor(y1, not_f, s1) ;
-//nor(not_y1, y1, y1) ;
 nor(not_s2, s2, s2) ;
 nor(b, not_y1, not_s2) ;
 
