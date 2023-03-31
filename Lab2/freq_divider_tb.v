@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 30.03.2023 11:43:05
+// Create Date: 30.03.2023 23:00:54
 // Design Name: 
-// Module Name: counter
+// Module Name: freq_divider_tb
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,18 +19,25 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module counter(clk, rst, en, out);
-    input clk, rst, en;
-    output reg [31:0] out;
-    
-    //reg[31:0] cnt = 32'd0;
-    //wire[31:0] cnt_val_next;
-    //assign cnt_val_next = cnt + 1;
-    
-    always @ (posedge clk or negedge rst) begin
-        if(! rst)
-            out <= 0;
-        else if (en)
-            out <= out+1;
-    end   
+
+module freq_divider_tb;
+
+reg clock;
+wire clock_out;
+
+freq_divider fdiv(
+    .clk (clock),
+    .clk_out (clock_out)
+);
+
+integer i;
+initial begin
+    i = 0;
+    clock = 1;
+    for (i = 0 ; i < 100; i = i + 1) begin
+        #5 clock = ~clock;
+        #5 clock = ~clock;
+    end
+    $stop;
+end
 endmodule
