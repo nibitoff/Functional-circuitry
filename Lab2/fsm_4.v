@@ -29,14 +29,15 @@ module fsm_4(
     output reg [3:0] debug_state,
     output reg [35:0] deb_adder_1, deb_mult_1, deb_div_1, deb_adder_2
 );
+
 parameter START = 0;
 parameter A_SUM_B = 1;
 parameter SUM_MUL_4 = 2;
 parameter ADD_B= 3;
-parameter LEFT_DIV_2 = 4;
-parameter DIV_B_2 = 5;
-parameter A_MUL_4 = 6;
-parameter DIV_ADD_MULL = 7;
+parameter DIV_B_2 = 4;
+parameter A_MUL_4 = 5;
+parameter DIV_ADD_MULL = 6;
+parameter LEFT_DIV_2 = 7;
 parameter ADD_ALL = 8;
 parameter FINISH = 9;
 
@@ -110,4 +111,3 @@ deb_div_1 <= div_1;
 deb_adder_2 <= adder_2;
 end
 endmodule
-
