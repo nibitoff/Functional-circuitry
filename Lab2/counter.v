@@ -19,27 +19,18 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
-module counter(
-    input clk,
-    input rst,
-    input en,
-    output reg[31:0] out);
+module counter(clk, rst, en, out);
+    input clk, rst, en;
+    output reg [31:0] out;
     
-    reg[31:0] cnt = 32'd0;
-    wire[31:0] cnt_val_next;
-    
-    assign cnt_val_next = cnt + 1;
+    //reg[31:0] cnt = 32'd0;
+    //wire[31:0] cnt_val_next;
+    //assign cnt_val_next = cnt + 1;
     
     always @ (posedge clk or negedge rst) begin
-        if (! rst)
-            cnt <= 0;
-        else if (en)
-            cnt <= cnt_val_next;
-            
-        if (en)
-            out <= cnt;
-        else
+        if(! rst)
             out <= 0;
-        end
+        else if (en)
+            out <= out+1;
+    end   
 endmodule
