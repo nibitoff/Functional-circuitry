@@ -24,6 +24,8 @@ module count_free_tb;
 reg clock, reset, start_req_i, start_data_i, ready_i;
 wire  result_rsp_o, busy_o;
 
+reg [31:0] waiting_time;
+
 count_free cnt(
     .clk (clock),
     .rst (reset),
@@ -34,66 +36,56 @@ count_free cnt(
     .busy_o (busy_o)
 );
 
-integer i;
+integer i, digits_number;
 initial begin
-    //load_value = 69;
+    waiting_time = 6;
     i = 0;
+    digits_number = 0;
+    
     start_req_i = 0;
     start_data_i = 0;
     ready_i = 0;
     clock = 1;
-    reset = 1;        
-   
-//    reset = 1;
-    #5 clock = ~clock;
-    #5 clock = ~clock;
-    reset = 0;
-
-    //load = 1;
-    for (i = 0 ; i < 2 ; i = i + 1) begin
-        #5 clock = ~clock;
-        #5 clock = ~clock;
-    end
-
-    start_req_i = 1;
-
-    for (i = 0 ; i < 2 ; i = i + 1) begin
-        #5 clock = ~clock;
-        #5 clock = ~clock;
-    end
-      start_req_i = 0;
-
+    reset = 1;
     
-    for (i = 0 ; i < 7 ; i = i + 1) begin
-        #5 clock = ~clock;
-        #5 clock = ~clock;
-        end
-      start_req_i = 1;
-
- for (i = 0 ; i < 3 ; i = i + 1) begin
-        #5 clock = ~clock;
-        #5 clock = ~clock;
-     end
-      start_req_i = 0;
-
-    i = 0; 
+    reset = 0;
+    #5 clock = ~clock;
     reset = 1;
     #5 clock = ~clock;
-    #5 clock = ~clock;
-    reset = 0;
-
-    //load_value = 77;
-    //load = 1;
-    #5 clock = ~clock;
-    //load = 0;
-    #5 clock = ~clock;
     
-    for (i = 0 ; i < 10 ; i = i + 1) begin
+    start_req_i = 1;
+    
+    while(waiting_time >> digits_number) begin
+        digits_number = digits_number + 1;  
+    end
+    digits_number = digits_number - 1;
+    
+    while(digits_number >= 0) begin
+        start_data_i = (waiting_time >> digits_number) & 1;
+        $display("waiting_time[%d], %b", digits_number, start_data_i);
+        digits_number = digits_number - 1;  
+        #5 clock = ~clock;  
+        #5 clock = ~clock;
+    end
+    start_req_i = 0;
+    start_data_i = 0;
+    
+    for(i = 0; i < 12; i = i + 1) begin
         #5 clock = ~clock;
         #5 clock = ~clock;
-        end
-        
+    end
     
+    ready_i = 1;
+    #5 clock = ~clock;
+    ready_i = 0;
+    #5 clock = ~clock;
+    
+    
+    // show idle state
+    for(i = 14; i < 18; i = i + 1) begin
+        #5 clock = ~clock;
+        #5 clock = ~clock;    
+    end 
     $stop;
 end
 endmodule
