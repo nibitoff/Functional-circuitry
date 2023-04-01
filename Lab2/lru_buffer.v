@@ -29,11 +29,11 @@ module lru_buffer(clk, rst, valid_data, data,
     output reg [3:0] age0_debug, age1_debug, age2_debug, age3_debug;
     output reg [1:0] state_debug;
     
-    reg[1:0] state;
+    reg[2:0] state;
     
-    reg [3:0] ages[0:3];
-    reg [3:0] hitIndex;
-    reg [3:0] index;
+    reg [2:0] ages[0:3];
+    reg [2:0] hitIndex;
+    reg [2:0] index;
     
     integer j;
     
