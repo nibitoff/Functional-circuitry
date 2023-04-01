@@ -72,7 +72,7 @@ case (cur_state)
         ADD_ALL:
             next_state = FINISH;
         FINISH:
-            next_state = START;
+            next_state = FINISH;
         default:
             next_state = START;
     endcase
