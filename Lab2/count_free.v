@@ -39,14 +39,24 @@ reg [1:0] next_state = IDLE;
 
 always @(*) begin
     case (state)
-        IDLE:
+        IDLE: begin
             next_state = COUNTING;
-        COUNTING:
+            result_rsp_o = 0;
+            busy_o = 0;
+        end
+        COUNTING: begin
             next_state = WAITING;
-        WAITING:
+            busy_o = 1;
+        end
+        WAITING: begin
             next_state = DONE;
-        DONE:
+            busy_o = 1;
+        end
+        DONE: begin
             next_state = IDLE;
+            result_rsp_o = 1;
+            busy_o = 0;
+        end
     endcase  
 end
 
@@ -54,20 +64,12 @@ always @ (posedge clk, negedge rst) begin
     if (!rst) begin
         state <= IDLE;
         count <= 0;
-        busy_o <= 0;
-        result_rsp_o <= 0;
+        data <= 0;
     end else begin
-        if ((state == IDLE) || (state == DONE))
-            busy_o <= 0;
-        else
-            busy_o <= 1;
-        
         case (state)
             IDLE: begin
-                result_rsp_o <= 0;
                 if (start_req_i) begin
                     data <= start_data_i;
-                    busy_o <= 1;
                     state <= next_state;
                 end
             end
@@ -76,19 +78,18 @@ always @ (posedge clk, negedge rst) begin
                     data <= (data << 1) + start_data_i;
                 end else begin
                     count <= 0;
+                    state <= next_state;
                 end
             end
             WAITING: begin
-                if (count == data) begin
-                    result_rsp_o <= 1;
-                    state <= next_state;
-                end
+                if (count == data) state <= next_state;
+                else count <= count + 1;
             end
             DONE: begin
                 if (ready_i) state <= next_state;
             end
         endcase
-        count <= count + 1;
     end
+    
 end
 endmodule
