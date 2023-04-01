@@ -23,6 +23,7 @@
 module fsm_4(
     input clk,
     input reset,
+    input valid_data,
     input [31:0] A,
     input [31:0] B,
     output reg [35:0] result
@@ -46,8 +47,13 @@ reg [35:0] adder_1, mult_1, div_1, adder_2;
 always @(posedge clk, negedge reset) begin
     if (!reset)
         cur_state <= IDLE;
-    else
+    else if(cur_state != IDLE)
         cur_state <= next_state;
+    else if(valid_data) begin
+        result <= 0; 
+        cur_state <= next_state;
+    end
+    
 end
 
 always @(*) begin 
@@ -80,7 +86,7 @@ end
 always @(posedge clk) begin
     case (cur_state)
         IDLE:
-            result <= 0;
+            ;
         A_SUM_B:
             adder_1 <= A + B;
         SUM_MUL_4:
