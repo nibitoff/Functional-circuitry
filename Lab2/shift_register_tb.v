@@ -36,7 +36,7 @@ shift_register cnt(
 
 integer i;
 initial begin
-    load_value = 69;
+    load_value = 32'hF0F0CCCC;
     i = 0;
     enable = 1;
     clock = 1;
@@ -54,7 +54,7 @@ initial begin
     load = 0;
     #5 clock = ~clock;
     
-    for (i = 0 ; i < 10 ; i = i + 1) begin
+    for (i = 0 ; i < 32; i = i + 1) begin
         #5 clock = ~clock;
         #5 clock = ~clock;
         end
@@ -65,13 +65,13 @@ initial begin
     reset = 0;
     #5 clock = ~clock;
 
-    load_value = 77;
+    load_value = 32'hAAAAAAAA;
     load = 1;
     #5 clock = ~clock;
     load = 0;
     #5 clock = ~clock;
     
-    for (i = 0 ; i < 10 ; i = i + 1) begin
+    for (i = 0 ; i < 32; i = i + 1) begin
         #5 clock = ~clock;
         #5 clock = ~clock;
         end
@@ -81,4 +81,3 @@ initial begin
 end
 
 endmodule
-
