@@ -23,10 +23,6 @@ module counter(clk, rst, en, out);
     input clk, rst, en;
     output reg [31:0] out;
     
-    //reg[31:0] cnt = 32'd0;
-    //wire[31:0] cnt_val_next;
-    //assign cnt_val_next = cnt + 1;
-    
     always @ (posedge clk or negedge rst) begin
         if(! rst)
             out <= 0;
