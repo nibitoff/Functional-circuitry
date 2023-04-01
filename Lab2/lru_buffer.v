@@ -31,12 +31,9 @@ module lru_buffer(clk, rst, valid_data, data,
     
     reg[1:0] state;
     
-    reg [7:0] buffer[0:3];
-    
     reg [3:0] ages[0:3];
     reg [3:0] hitIndex;
     reg [3:0] index;
-    reg isHit;
     
     integer j;
     
@@ -47,18 +44,9 @@ module lru_buffer(clk, rst, valid_data, data,
         out1 <= 7'd0;
         out2 <= 7'd0;
         out3 <= 7'd0;
-        isHit <= 1'b0;
         hitIndex <= 4'd0;
-        for(j = 0; j < 4; j = j + 1) begin
-            ages[j] <= j;
-            buffer[j] <= 7'd0;
-        end
-        out0 <= 7'd0;
-        out1 <= 7'd0;
-        out2 <= 7'd0;
-        out3 <= 7'd0;
+        for(j = 0; j < 4; j = j + 1) ages[j] <= j;
         state <= IDLE;
-        
         state_debug <= state;
     end
     
@@ -74,9 +62,25 @@ module lru_buffer(clk, rst, valid_data, data,
             CHECKING_HIT: begin
                 if(hitIndex > 3) state <= nHIT_UPDATING;
                 else begin
-//                    $display("STATE: checking_hit, hitindex: %d", hitIndex);
-                    if(buffer[hitIndex] == data) state <= HIT_UPDATING;
-                    else hitIndex <= hitIndex + 1;                
+                    case(hitIndex)
+                            0:  begin
+                                if(out0 == data) state <= HIT_UPDATING;
+                                else hitIndex <= hitIndex + 1;  
+                            end
+                            1:  begin  
+                                if(out1 == data) state <= HIT_UPDATING;
+                                else hitIndex <= hitIndex + 1;  
+                            end
+                            2:  begin
+                                if(out2 == data) state <= HIT_UPDATING;
+                                else hitIndex <= hitIndex + 1;  
+                            end                            
+                            3:  begin
+                                if(out3 == data) state <= HIT_UPDATING;
+                                else hitIndex <= hitIndex + 1;  
+                            end
+                    endcase
+                                  
                 end
             end
             HIT_UPDATING: begin
@@ -84,7 +88,6 @@ module lru_buffer(clk, rst, valid_data, data,
                     state <= IDLE;
                     ages[hitIndex] = 0;
                 end else begin
-//                    $display("STATE: HIT_UPDATING, hitindex:%d, index: %d", hitIndex, index);
                     if(ages[index] < ages[hitIndex]) ages[index] <= ages[index] + 1;
                     index <= index + 1;                
                 end
@@ -92,20 +95,20 @@ module lru_buffer(clk, rst, valid_data, data,
             nHIT_UPDATING: begin
                 if(index > 3) state <= IDLE;
                 else begin
-//                    $display("STATE: nHIT_UPDATING, index: %d", index);
                     if(ages[index] == 3) begin
                         ages[index] <= 0;
-                        buffer[index] <= data;
+                        case(index)
+                            0:  out0 <= data;
+                            1:  out1 <= data;
+                            2:  out2 <= data;
+                            3:  out3 <= data;
+                        endcase
                     end else ages[index] <= ages[index] + 1;
                     index <= index + 1;
                 end
             end
         endcase
 
-        out0 <= buffer[0];
-        out1 <= buffer[1];
-        out2 <= buffer[2];
-        out3 <= buffer[3];
         age0_debug <= ages[0];
         age1_debug <= ages[1];
         age2_debug <= ages[2];
