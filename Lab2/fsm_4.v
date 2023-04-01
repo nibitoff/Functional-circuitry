@@ -19,14 +19,13 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+
 module fsm_4(
     input clk,
     input reset,
     input [31:0] A,
     input [31:0] B,
-    output reg [35:0] result,
-    output reg [3:0] debug_state,
-    output reg [35:0] deb_adder_1, deb_mult_1, deb_div_1, deb_adder_2
+    output reg [35:0] result
 );
 
 parameter IDLE = 0;
@@ -103,13 +102,5 @@ always @(posedge clk) begin
         default:
             next_state <= IDLE;
     endcase
-    
-debug_state <= cur_state;
-deb_adder_1 <= adder_1;
-deb_mult_1 <= mult_1;
-deb_div_1 <= div_1;
-deb_adder_2 <= adder_2;
 end
 endmodule
-
-

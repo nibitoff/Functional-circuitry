@@ -26,8 +26,6 @@ module fsm_4_tb;
 reg clock, reset;
 reg [31:0] A_in, B_in;
 wire [35:0] result;
-wire [3:0] state;
-wire [35:0] adder_1, mult_1, div_1, adder_2;
 
 reg [31:0] expected_result;
 
@@ -36,12 +34,7 @@ fsm_4 fsm(
     .reset(reset),
     .A(A_in),
     .B(B_in),
-    .result(result),
-    .debug_state(state),
-    .deb_adder_1(adder_1),
-    .deb_mult_1(mult_1),
-    .deb_div_1(div_1),
-    .deb_adder_2(adder_2)
+    .result(result)
 );
 
 integer i;
