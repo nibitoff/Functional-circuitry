@@ -21,22 +21,21 @@
 
 
 module count_free(
-    input clk, // тактовый сигнал
-    input rst, // сигнал сброса
-    input start_req_i, // сигнал запроса валидности входных данных
-    input start_data_i, // однобитный сигнал данных
-    input ready_i, // сигнал готовности внешнего устройства прин€ть результат
-    output reg result_rsp_o, // сигнал готовности результата
-    output reg busy_o // сигнал зан€тости устройства
+    input clk,
+    input rst,
+    input start_req_i,
+    input start_data_i,
+    input ready_i,
+    output reg result_rsp_o,
+    output reg busy_o
 );
 
-// ¬нутренние сигналы и параметры
 parameter IDLE = 0, COUNTING = 1, WAITING = 2, DONE = 3;
 reg [31:0] count;
 reg [31:0] data = 31'd0;
 reg [1:0] state;
 reg [1:0] next_state = IDLE;
-// Ћогика переходов состо€ний
+
 always @ (posedge clk, posedge rst) begin
     if (rst) begin
         state <= IDLE;
@@ -48,7 +47,6 @@ always @ (posedge clk, posedge rst) begin
     end
 end
 
-// Ћогика выполнени€
 always @ (posedge clk, posedge rst) begin
     if (rst) begin
         state <= IDLE;
@@ -65,7 +63,6 @@ always @ (posedge clk, posedge rst) begin
         case (state)
             IDLE: begin
                 result_rsp_o = 0;
-                // ≈сли начинаетс€ передача данных, начинаем записывать в дата
 
                 if (start_req_i) begin
                     data = start_data_i;
@@ -74,7 +71,6 @@ always @ (posedge clk, posedge rst) begin
                 end
             end
             COUNTING: begin
-                //≈сли сигнал валидности запроса, увеличиваем значение регистра
                 if (start_req_i) begin
                     data = (data << 1) + start_data_i;
                 end else begin
