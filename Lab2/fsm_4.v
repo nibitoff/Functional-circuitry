@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module fsm_4(
     input clk,
     input reset,
@@ -30,7 +29,7 @@ module fsm_4(
     output reg [35:0] deb_adder_1, deb_mult_1, deb_div_1, deb_adder_2
 );
 
-parameter START = 0;
+parameter IDLE = 0;
 parameter A_SUM_B = 1;
 parameter SUM_MUL_4 = 2;
 parameter ADD_B= 3;
@@ -44,16 +43,17 @@ parameter FINISH = 9;
 reg [3:0] cur_state, next_state;
 reg [35:0] adder_1, mult_1, div_1, adder_2;
 
+
 always @(posedge clk, negedge reset) begin
     if (!reset)
-        cur_state <= START;
+        cur_state <= IDLE;
     else
         cur_state <= next_state;
 end
 
 always @(*) begin 
 case (cur_state)
-        START:
+        IDLE:
             next_state = A_SUM_B;
         A_SUM_B:
             next_state = SUM_MUL_4;
@@ -72,15 +72,15 @@ case (cur_state)
         ADD_ALL:
             next_state = FINISH;
         FINISH:
-            next_state = START;
+            next_state = IDLE;
         default:
-            next_state = START;
+            next_state = IDLE;
     endcase
 end
 
 always @(posedge clk) begin
     case (cur_state)
-        START:
+        IDLE:
             result <= 0;
         A_SUM_B:
             adder_1 <= A + B;
@@ -101,7 +101,7 @@ always @(posedge clk) begin
         FINISH:
             result <= adder_1;
         default:
-            next_state <= START;
+            next_state <= IDLE;
     endcase
     
 debug_state <= cur_state;
@@ -111,3 +111,5 @@ deb_div_1 <= div_1;
 deb_adder_2 <= adder_2;
 end
 endmodule
+
+
