@@ -36,15 +36,18 @@ reg [31:0] data = 31'd0;
 reg [1:0] state;
 reg [1:0] next_state = IDLE;
 
-always @ (posedge clk, posedge rst) begin
-    if (rst) begin
-        state <= IDLE;
-        count <= 0;
-        busy_o <= 0;
-    end else begin
-        state <= next_state;
-        count <= count + 1;
-    end
+
+always @(*) begin
+    case (state)
+        IDLE:
+            next_state = COUNTING;
+        COUNTING:
+            next_state = WAITING;
+        WAITING:
+            next_state = DONE;
+        DONE:
+            next_state = IDLE;
+    endcase  
 end
 
 always @ (posedge clk, posedge rst) begin
@@ -52,46 +55,40 @@ always @ (posedge clk, posedge rst) begin
         state <= IDLE;
         count <= 0;
         busy_o <= 0;
+        result_rsp_o <= 0;
     end else begin
         if ((state == IDLE) || (state == DONE))
-            busy_o = 0;
+            busy_o <= 0;
         else
-            busy_o = 1;
-            
-        next_state = state;
+            busy_o <= 1;
         
         case (state)
             IDLE: begin
-                result_rsp_o = 0;
-
+                result_rsp_o <= 0;
                 if (start_req_i) begin
-                    data = start_data_i;
-                    next_state = COUNTING;
-                    busy_o = 1;
+                    data <= start_data_i;
+                    busy_o <= 1;
+                    state <= next_state;
                 end
             end
             COUNTING: begin
                 if (start_req_i) begin
-                    data = (data << 1) + start_data_i;
+                    data <= (data << 1) + start_data_i;
                 end else begin
-                    next_state = WAITING;
-                    count = 0;
+                    count <= 0;
                 end
             end
-           WAITING: begin
+            WAITING: begin
                 if (count == data) begin
-                    next_state = DONE;
-                    result_rsp_o = 1;
-                    if(ready_i)
-                        next_state = IDLE;
-                    end
+                    result_rsp_o <= 1;
+                    state <= next_state;
                 end
-           DONE: begin
-                if (ready_i) begin
-                    next_state = IDLE;
-                end
+            end
+            DONE: begin
+                if (ready_i) state <= next_state;
             end
         endcase
+        count <= count + 1;
     end
 end
 endmodule
