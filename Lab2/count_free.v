@@ -21,81 +21,75 @@
 
 
 module count_free(
-    input clk, // тактовый сигнал
-    input rst, // сигнал сброса
-    input start_req_i, // сигнал запроса валидности входных данных
-    input start_data_i, // однобитный сигнал данных
-    input ready_i, // сигнал готовности внешнего устройства прин€ть результат
-    output reg result_rsp_o, // сигнал готовности результата
-    output reg busy_o // сигнал зан€тости устройства
+    input clk,
+    input rst,
+    input start_req_i,
+    input start_data_i,
+    input ready_i,
+    output reg result_rsp_o,
+    output reg busy_o
 );
 
-// ¬нутренние сигналы и параметры
 parameter IDLE = 0, COUNTING = 1, WAITING = 2, DONE = 3;
 reg [31:0] count;
 reg [31:0] data = 31'd0;
 reg [1:0] state;
 reg [1:0] next_state = IDLE;
-// Ћогика переходов состо€ний
-always @ (posedge clk, posedge rst) begin
-    if (rst) begin
-        state <= IDLE;
-        count <= 0;
-        busy_o <= 0;
-    end else begin
-        state <= next_state;
-        count <= count + 1;
-    end
+
+
+always @(*) begin
+    case (state)
+        IDLE: begin
+            next_state = COUNTING;
+            result_rsp_o = 0;
+            busy_o = 0;
+        end
+        COUNTING: begin
+            next_state = WAITING;
+            busy_o = 1;
+        end
+        WAITING: begin
+            next_state = DONE;
+            busy_o = 1;
+        end
+        DONE: begin
+            next_state = IDLE;
+            result_rsp_o = 1;
+            busy_o = 0;
+        end
+    endcase  
 end
 
-// Ћогика выполнени€
-always @ (posedge clk, posedge rst) begin
-    if (rst) begin
+always @ (posedge clk, negedge rst) begin
+    if (!rst) begin
         state <= IDLE;
         count <= 0;
-        busy_o <= 0;
+        data <= 0;
     end else begin
-        if ((state == IDLE) || (state == DONE))
-            busy_o = 0;
-        else
-            busy_o = 1;
-            
-        next_state = state;
-        
         case (state)
             IDLE: begin
-                result_rsp_o = 0;
-                // ≈сли начинаетс€ передача данных, начинаем записывать в дата
-
                 if (start_req_i) begin
-                    data = start_data_i;
-                    next_state = COUNTING;
-                    busy_o = 1;
+                    data <= start_data_i;
+                    state <= next_state;
                 end
             end
             COUNTING: begin
-                //≈сли сигнал валидности запроса, увеличиваем значение регистра
                 if (start_req_i) begin
-                    data = (data << 1) + start_data_i;
+                    data <= (data << 1) + start_data_i;
                 end else begin
-                    next_state = WAITING;
-                    count = 0;
+                    count <= 0;
+                    state <= next_state;
                 end
             end
-           WAITING: begin
-                if (count == data) begin
-                    next_state = DONE;
-                    result_rsp_o = 1;
-                    if(ready_i)
-                        next_state = IDLE;
-                    end
-                end
-           DONE: begin
-                if (ready_i) begin
-                    next_state = IDLE;
-                end
+            WAITING: begin
+                if (count == data) state <= next_state;
+                else count <= count + 1;
+            end
+            DONE: begin
+                if (ready_i) state <= next_state;
             end
         endcase
     end
+    
 end
 endmodule

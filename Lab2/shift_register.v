@@ -30,8 +30,7 @@ module shift_register(
 );
 reg [31:0] shiftreg_value;
 wire [31:0] shifted_val_next;
-assign shifted_val_next = (load) ? load_value :
- shiftreg_value >> 1;
+assign shifted_val_next = (load) ? load_value : shiftreg_value >> 1;
 always @(posedge clk, posedge reset) begin
     if (reset) 
         shiftreg_value <= 31'b0;
@@ -41,4 +40,3 @@ always @(posedge clk, posedge reset) begin
 end
 assign s_out = shiftreg_value[0];
 endmodule
-
