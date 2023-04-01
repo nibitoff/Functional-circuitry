@@ -21,13 +21,10 @@
 
 
 module lru_buffer(clk, rst, valid_data, data,
-                  out0, out1, out2, out3,
-                  age0_debug, age1_debug, age2_debug, age3_debug, state_debug);
+                  out0, out1, out2, out3);
     input clk, rst, valid_data;
     input [7:0] data;
-    output reg [7:0] out0, out1, out2, out3;
-    output reg [3:0] age0_debug, age1_debug, age2_debug, age3_debug;
-    output reg [1:0] state_debug;
+    output reg [7:0] out0, out1, out2, out3;;
     
     reg[2:0] state;
     
@@ -47,7 +44,6 @@ module lru_buffer(clk, rst, valid_data, data,
         hitIndex <= 4'd0;
         for(j = 0; j < 4; j = j + 1) ages[j] <= j;
         state <= IDLE;
-        state_debug <= state;
     end
     
     always @ (posedge clk) begin
@@ -108,11 +104,5 @@ module lru_buffer(clk, rst, valid_data, data,
                 end
             end
         endcase
-
-        age0_debug <= ages[0];
-        age1_debug <= ages[1];
-        age2_debug <= ages[2];
-        age3_debug <= ages[3];
-        state_debug <= state;
     end
 endmodule

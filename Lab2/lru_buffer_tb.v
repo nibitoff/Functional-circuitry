@@ -9,12 +9,6 @@ wire[7:0] out1;
 wire[7:0] out2;
 wire[7:0] out3;
 
-wire[3:0] ages0;
-wire[3:0] ages1;
-wire[3:0] ages2;
-wire[3:0] ages3;
-wire[1:0] state;
-
 lru_buffer lru(
     .clk (clock),
     .rst (reset),
@@ -23,12 +17,7 @@ lru_buffer lru(
     .out0(out0),
     .out1(out1),
     .out2(out2),
-    .out3(out3),
-    .age0_debug(ages0),
-    .age1_debug(ages1),
-    .age2_debug(ages2),
-    .age3_debug(ages3),
-    .state_debug(state)
+    .out3(out3)
 );
 
 integer i,j;
