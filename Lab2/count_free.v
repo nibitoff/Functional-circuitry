@@ -25,14 +25,9 @@ module count_free(
     input rst, // сигнал сброса
     input start_req_i, // сигнал запроса валидности входных данных
     input start_data_i, // однобитный сигнал данных
-    input ready_i, // сигнал готовности внешнего устройства принять
-    результат
+    input ready_i, // сигнал готовности внешнего устройства принять результат
     output reg result_rsp_o, // сигнал готовности результата
     output reg busy_o // сигнал занятости устройства
-    // output reg [1:0] deb_state,
-    // output reg [1:0] deb_next_state,
-    // output reg [31:0] deb_count,
-    // output reg [31:0] deb_data
 );
 
 // Внутренние сигналы и параметры
@@ -69,44 +64,38 @@ always @ (posedge clk, posedge rst) begin
         
         case (state)
             IDLE: begin
-            result_rsp_o = 0;
-            // Если начинается передача данных, начинаем записывать в
-дата
-if (start_req_i) begin
-data = start_data_i;
-next_state = COUNTING;
-busy_o = 1;
-end
-end
-COUNTING: begin
-//Если сигнал валидности запроса, увеличиваем значение
-регистра
-if (start_req_i) begin
-// data = {data[30:0], start_data_i};
-data = (data << 1) + start_data_i;
-end else begin
-next_state = WAITING;
-count = 0;
-end
-end
-WAITING: begin
-if (count == data) begin
-next_state = DONE;
-result_rsp_o = 1;
-if(ready_i)
-next_state = IDLE;
-end
-end
-DONE: begin
-if (ready_i) begin
-next_state = IDLE;
-end
-end
-endcase
-end
-// deb_state = state;
-// deb_next_state = next_state;
-// deb_count = count;
-// deb_data = data;
+                result_rsp_o = 0;
+                // Если начинается передача данных, начинаем записывать в дата
+
+                if (start_req_i) begin
+                    data = start_data_i;
+                    next_state = COUNTING;
+                    busy_o = 1;
+                end
+            end
+            COUNTING: begin
+                //Если сигнал валидности запроса, увеличиваем значение регистра
+                if (start_req_i) begin
+                    data = (data << 1) + start_data_i;
+                end else begin
+                    next_state = WAITING;
+                    count = 0;
+                end
+            end
+           WAITING: begin
+                if (count == data) begin
+                    next_state = DONE;
+                    result_rsp_o = 1;
+                    if(ready_i)
+                        next_state = IDLE;
+                    end
+                end
+           DONE: begin
+                if (ready_i) begin
+                    next_state = IDLE;
+                end
+            end
+        endcase
+    end
 end
 endmodule
