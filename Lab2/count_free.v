@@ -50,8 +50,8 @@ always @(*) begin
     endcase  
 end
 
-always @ (posedge clk, posedge rst) begin
-    if (rst) begin
+always @ (posedge clk, negedge rst) begin
+    if (!rst) begin
         state <= IDLE;
         count <= 0;
         busy_o <= 0;
