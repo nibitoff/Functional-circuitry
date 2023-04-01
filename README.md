@@ -1,2 +1,2 @@
 # Functional-circuitry
- (ITMO University, third year)
+aka Функциональная схемотехника (ITMO University, third year)
