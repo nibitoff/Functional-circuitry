@@ -24,7 +24,7 @@ module lru_buffer(clk, rst, valid_data, data,
                   out0, out1, out2, out3);
     input clk, rst, valid_data;
     input [7:0] data;
-    output reg [7:0] out0, out1, out2, out3;;
+    output reg [7:0] out0, out1, out2, out3;
     
     reg[2:0] state;
     
@@ -35,16 +35,6 @@ module lru_buffer(clk, rst, valid_data, data,
     integer j;
     
     parameter IDLE = 0, CHECKING_HIT = 1, HIT_UPDATING = 2, nHIT_UPDATING = 3;
-    
-//    always @ (negedge rst) begin
-//        out0 <= 8'd0;
-//        out1 <= 8'd0;
-//        out2 <= 8'd0;
-//        out3 <= 8'd0;
-//        hitIndex <= 4'd0;
-//        for(j = 0; j < 4; j = j + 1) ages[j] <= j;
-//        state <= IDLE;
-//    end
     
     always @ (posedge clk, negedge rst) begin
         if (!rst) begin
