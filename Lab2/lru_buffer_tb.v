@@ -39,11 +39,11 @@ initial begin
     i = 0;
     j = 0;
     clock = 0;
-    reset = 0;
+    reset = 1;
     valid_data_in = 0;
     
-    #5 reset = 1;
     #5 reset = 0;
+    #5 reset = 1;
     
     for( j = 0; j < 12; j = j + 1) begin 
         data_in = test_sequence[j];

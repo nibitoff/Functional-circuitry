@@ -36,17 +36,26 @@ module lru_buffer(clk, rst, valid_data, data,
     
     parameter IDLE = 0, CHECKING_HIT = 1, HIT_UPDATING = 2, nHIT_UPDATING = 3;
     
-    always @ (posedge rst) begin
-        out0 <= 7'd0;
-        out1 <= 7'd0;
-        out2 <= 7'd0;
-        out3 <= 7'd0;
-        hitIndex <= 4'd0;
-        for(j = 0; j < 4; j = j + 1) ages[j] <= j;
-        state <= IDLE;
-    end
+//    always @ (negedge rst) begin
+//        out0 <= 8'd0;
+//        out1 <= 8'd0;
+//        out2 <= 8'd0;
+//        out3 <= 8'd0;
+//        hitIndex <= 4'd0;
+//        for(j = 0; j < 4; j = j + 1) ages[j] <= j;
+//        state <= IDLE;
+//    end
     
-    always @ (posedge clk) begin
+    always @ (posedge clk, negedge rst) begin
+        if (!rst) begin
+            out0 <= 8'd0;
+            out1 <= 8'd0;
+            out2 <= 8'd0;
+            out3 <= 8'd0;
+            hitIndex <= 4'd0;
+            for(j = 0; j < 4; j = j + 1) ages[j] <= j;
+            state <= IDLE;
+        end else
         case(state)
             IDLE: begin
                 if(valid_data) begin 
